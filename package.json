@@ -1,9 +1,10 @@
 {
   "name": "family-tree-linebot",
-  "version": "1.0.0",
+  "version": "0.0.1",
   "description": "",
   "main": "index.js",
   "scripts": {
+    "start": "node index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -17,6 +18,9 @@
     "url": "https://github.com/HarkuLi/family-tree-linebot/issues"
   },
   "homepage": "https://github.com/HarkuLi/family-tree-linebot#readme",
+  "engines": {
+    "ndoe": "6.10.3"
+  },
   "dependencies": {
     "@line/bot-sdk": "^2.0.0",
     "express": "^4.15.3"
