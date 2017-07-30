@@ -35,7 +35,7 @@ var handleEvent = (event)=>{
     })
     .then(rst => {
       if(rst) return true;
-      return talkHandle(event, sourceId, event.message.text);
+      return talkHandle(event, sourceId, event.message.text, colleName);
     });
   
   // const echo = {type: "text", text: event.message.text};
@@ -73,8 +73,8 @@ var cmdHandle = (event, srcId, msg) => {
 /**
  * return a promise, and the result would be true if the bot responds
  */
-var talkHandle = (event, srcId, msg) => {
-  dbop.getResByMsg(msg)
+var talkHandle = (event, srcId, msg, colleName) => {
+  dbop.getResByMsg(msg, colleName)
     .then(resObj => {
       if(!resObj) return false;
       var text = "";
@@ -97,9 +97,9 @@ var help = (event, msg) => {
   var rstFalse = Promise.resolve(false);
 
   msg = rmRedundantSpace(msg);
-  //format: 瑪修, 再講一次指令
+  //format: 瑪修,再講一次指令
   //format checking
-  if(msg !== "瑪修, 再講一次指令") return rstFalse;
+  if(msg !== "瑪修,再講一次指令") return rstFalse;
   var text = "好~我再說一次(*´∀`):\n";
   text += "-----------------------------------------\n";
   text += "功能: 使用家庭回話資料庫\n";
