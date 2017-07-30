@@ -30,7 +30,7 @@ var handleEvent = (event)=>{
   dbop.getColleById(sourceId)
     .then(colle=>{
       colleName = colle;
-      return cmdHandle(event.message.text);
+      return cmdHandle(event, sourceId, event.message.text);
     });
   
   // const echo = {type: "text", text: event.message.text};
@@ -46,6 +46,7 @@ app.listen(port, ()=>{
 
 /** function */
 var cmdHandle = (event, srcId, msg) => {
+  console.log(msg);
   return teach(event, msg)
     .then(rst => {
       if(rst) return true;
