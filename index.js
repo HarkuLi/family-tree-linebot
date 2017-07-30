@@ -27,10 +27,15 @@ var handleEvent = (event)=>{
   var sourceId = event.source[event.source.type+"Id"];
   var colleName;
   
+  //determine reponse database
   dbop.getColleById(sourceId)
-    .then(colle=>{
+    .then(colle => {
       colleName = colle;
       return cmdHandle(event, sourceId, event.message.text);
+    })
+    .then(rst => {
+      if(rst) return true;
+      return talkHandle(event, sourceId, event.message.text);
     });
   
   // const echo = {type: "text", text: event.message.text};
@@ -50,7 +55,6 @@ app.listen(port, ()=>{
  * return a promise, and the result would be true if the message is a defined command
  */
 var cmdHandle = (event, srcId, msg) => {
-  console.log(msg);
   return teach(event, msg)
     .then(rst => {
       if(rst) return true;
@@ -59,10 +63,27 @@ var cmdHandle = (event, srcId, msg) => {
     .then(rst =>{
       if(rst) return true;
       return talkToMashu(event, srcId, msg);
+    });
+};
+
+/**
+ * return a promise, and the result would be true if the bot responds
+ */
+var talkHandle = (event, srcId, msg) => {
+  dbop.getResByMsg(msg)
+    .then(resObj => {
+      if(!resObj) return false;
+      var text = "";
+      var resMsg;
+      if(resObj.talker) text += resObj.talker+": ";
+      text += resObj.res;
+      resMsg = {type: "text", text};
+      return client.replyMessage(event.replyToken, resMsg);
     })
     .then(rst => {
-      return rst;
-    })
+      if(rst) return true;
+      return false;
+    });
 };
 
 /**

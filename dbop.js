@@ -20,7 +20,7 @@ var getColleById = (srcId)=>{
       return colle.findOne({srcId});
     })
     .then(item => {
-      if(item) colleName = item.colleName;
+      if(item) colleName = "usr_"+item.usr;
       return colleName;
     });
 };
@@ -61,17 +61,32 @@ var colleMapDelete = (srcId) =>{
     });
 }
 
-/** operation of response mapping collection */
-var resMapUpsert = (pattern, response, colleName) => {
+/**
+ * operation of response mapping collection
+ */
+
+/**
+ * required parameters: pattern, response
+ */
+var resMapUpsert = (pattern, response, colleName, talker, talkerId) => {
   var colleName = colleName || defaultColle;
   var colle;
   return getDb
     .then(db => {
+      var reqObj = {pattern};
+      if(talker && talkerId)  reqObj.talkerId = talkerId;
       colle = db.collection(colleName);
-      return colle.updateOne({pattern}, {$set: {response}});
+      return colle.updateOne(reqObj, {$set: {response}});
     })
     .then(rst => {
-      if(!rst.matchedCount) return colle.insertOne({pattern, response});
+      if(!rst.matchedCount){
+        var insertObj = {pattern, response};
+        if(talker && talkerId){
+          insertObj.talker = talker;
+          insertObj.talkerId = talkerId;
+        }
+        return colle.insertOne(insertObj);
+      }
       return true;
     })
     .then(rst => {
@@ -80,13 +95,44 @@ var resMapUpsert = (pattern, response, colleName) => {
     });
 };
 
-var getResByPattern = (pattern, colleName) => {
+/**
+ * return a random response of the matched response list correspond to the message
+ * return object: {res, talker}
+ */
+var getResByMsg = (msg, colleName) => {
   var colleName = colleName || defaultColle;
+  var colle;
+
+  return getDb
+    .then(db => {
+      var stream;
+      colle = db.collection(colleName);
+      stream = colle.find().stream();
+      return new Promise((resolve) => {
+        var rst = [];
+
+        stream.on("end", () => {
+          resolve(rst);
+        });
+
+        stream.on("data", (data)=>{
+          if(isMatch(data.pattern, msg)){
+            let newObj = {res: data.response, talker: data.talker};
+            rst.push(newObj);
+          }
+        })
+      });
+    })
+    .then(resList => {
+      if(!resList.length) return null;
+      var idx = Math.floor(Math.random()*resList.length);
+      return resList[idx];
+    });
 };
 
 /** private functions */
 var isMatch = (pattern, msg) => {
-
+  return pattern === msg;
 };
 
-module.exports = {defaultColle, getColleById, colleMapUpsert, colleMapDelete, resMapUpsert};
+module.exports = {getColleById, colleMapUpsert, colleMapDelete, resMapUpsert, getResByMsg};
