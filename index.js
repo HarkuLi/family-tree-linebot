@@ -117,14 +117,13 @@ var switchUsr = (event, srcId, msg) => {
   return dbop.colleMapUpsert(srcId, usrName)
     .then(rst => {
       if(rst){
-        const resMsg = {type: "text", text: ("已切換家庭資料庫, 使用者: "+usrName)}
-        return client.replyMessage(event.replyToken, resMsg); //not sure
+        const resMsg = {type: "text", text: ("已切換家庭資料庫, 使用者: "+usrName)};
+        return client.replyMessage(event.replyToken, resMsg)
+          .then(() => true); //not sure
       }
-      return false;
-    })
-    .then(rst => {
-      if(rst) return true;
-      return false;
+      const resMsg = {type: "text", text: ("抱歉, 找不到這個家族使用者名稱【o´ﾟ□ﾟ`o】"+usrName)};
+      return client.replyMessage(event.replyToken, resMsg)
+        .then(() => false);
     });
 };
 
