@@ -30,7 +30,7 @@ var colleMapUpsert = (srcId, usr) =>{
 
   return getFtDb
     .then(db => {
-      var colle = db.collection("user");
+      colle = db.collection("user");
       return colle.count({usr});
     })
     .then(count => {
@@ -50,6 +50,16 @@ var colleMapUpsert = (srcId, usr) =>{
     .then(rst => {
       if(rst) return true;
       return false;
+    });
+}
+
+var colleMapDelete = (srcId) =>{
+  var colle;
+
+  return getFtDb
+    .then(db => {
+      var colle = db.collection(colleIcm);
+      return colle.remove({srcId});
     });
 }
 
@@ -81,4 +91,4 @@ var isMatch = (pattern, msg) => {
 
 };
 
-module.exports = {defaultColle, getColleById, colleMapUpsert, resMapUpsert};
+module.exports = {defaultColle, getColleById, colleMapUpsert, colleMapDelete, resMapUpsert};

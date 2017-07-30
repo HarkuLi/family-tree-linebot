@@ -45,12 +45,20 @@ app.listen(port, ()=>{
 });
 
 /** function */
+
+/**
+ * return a promise, and the result would be true if the message is a defined command
+ */
 var cmdHandle = (event, srcId, msg) => {
   console.log(msg);
   return teach(event, msg)
     .then(rst => {
       if(rst) return true;
       return switchUsr(event, srcId, msg);
+    })
+    .then(rst =>{
+      if(rst) return true;
+      return talkToMashu(event, srcId, msg);
     })
     .then(rst => {
       return rst;
@@ -84,7 +92,7 @@ var teach = (event, msg) => {
     .then(rst => {
       if(rst){
         const resMsg = {type: "text", text: "是, 我會記住的, 前輩(´▽｀)"}
-        return client.replyMessage(event.replyToken, resMsg); //not sure
+        return client.replyMessage(event.replyToken, resMsg);
       }
       return false;
     })
@@ -119,13 +127,34 @@ var switchUsr = (event, srcId, msg) => {
       if(rst){
         const resMsg = {type: "text", text: ("已切換家庭資料庫, 使用者: "+usrName)};
         return client.replyMessage(event.replyToken, resMsg)
-          .then(() => true); //not sure
+          .then(() => true);
       }
-      const resMsg = {type: "text", text: ("抱歉, 找不到這個家族使用者名稱【o´ﾟ□ﾟ`o】"+usrName)};
+      const resMsg = {type: "text", text: ("抱歉, 找不到這個家族使用者名稱【o´ﾟ□ﾟ`o】")};
       return client.replyMessage(event.replyToken, resMsg)
         .then(() => false);
     });
 };
+
+var talkToMashu = (event, srcId, msg) => {
+  var idx_ps; //ps: pattern start
+  var usrName;
+  var rstFalse = Promise.resolve(false);
+
+  msg = rmRedundantSpace(msg);
+  //format: 瑪修我想跟妳聊天
+  //format checking
+  if(msg !== "瑪修我想跟妳聊天") return rstFalse;
+  
+  //remove the id and usr mapping
+  return dbop.colleMapDelete(srcId)
+    .then(() => {
+      const resMsg = {type: "text", text: ("好啊, 前輩~我們要聊什麼呢?(*≧∇≦*)")};
+      return client.replyMessage(event.replyToken, resMsg);
+    })
+    .then(() => {
+      return true;
+    });
+}
 
 var rmRedundantSpace = (str) => {
   if(!str.length)  return "";
