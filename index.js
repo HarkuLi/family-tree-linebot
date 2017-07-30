@@ -55,7 +55,11 @@ app.listen(port, ()=>{
  * return a promise, and the result would be true if the message is a defined command
  */
 var cmdHandle = (event, srcId, msg) => {
-  return teach(event, msg)
+  return help(event, msg)
+    .then(rst => {
+      if(rst) return true;
+      return teach(event, msg);
+    })
     .then(rst => {
       if(rst) return true;
       return switchUsr(event, srcId, msg);
@@ -87,7 +91,36 @@ var talkHandle = (event, srcId, msg) => {
 };
 
 /**
- * return true if the msg is a teaching command
+ * return a promise, and the result would be true if the message is a help command 
+ */
+var help = (event, msg) => {
+  var rstFalse = Promise.resolve(false);
+
+  msg = rmRedundantSpace(msg);
+  //format: 瑪修, 再講一次指令
+  //format checking
+  if(msg !== "瑪修, 再講一次指令") return rstFalse;
+  var text = "好~我再說一次(*´∀`):\n";
+  text += "-----------------------------------------\n";
+  text += "功能: 使用家庭回話資料庫\n";
+  text += "指令: #switch family: [user name]\n";
+  text += "-----------------------------------------\n";
+  text += "功能: 跟我聊天(沒指定家庭回話資料庫的時候預設就是跟我對話唷(๑´ㅂ`๑))\n";
+  text += "指令: 瑪修我想跟妳聊天\n";
+  text += "-----------------------------------------\n";
+  text += "功能: 教我講話~\n";
+  text += "指令: 瑪修我教你:[一段話]=>[回應]\n";
+  text += "-----------------------------------------";
+  const resMsg = {type: "text", text};
+
+  return client.replyMessage(event.replyToken, resMsg)
+    .then(() => {
+      return true;
+    });
+};
+
+/**
+ * return a promise, and the result would be true if the message is a teaching command
  * and save the teaching content
  */
 var teach = (event, msg) => {
@@ -124,7 +157,7 @@ var teach = (event, msg) => {
 };
 
 /**
- * return true if the msg is a switching command
+ * return a promise, and the result would be true if the message is a switching command
  * and save the id and collection mapping
  */
 var switchUsr = (event, srcId, msg) => {
@@ -156,9 +189,11 @@ var switchUsr = (event, srcId, msg) => {
     });
 };
 
+/**
+ * return a promise, and the result would be true if the message is a talking to mashu command
+ * and reset the id and collection mapping
+ */
 var talkToMashu = (event, srcId, msg) => {
-  var idx_ps; //ps: pattern start
-  var usrName;
   var rstFalse = Promise.resolve(false);
 
   msg = rmRedundantSpace(msg);
