@@ -54,7 +54,7 @@ var colleMapUpsert = (srcId, usr) =>{
 }
 
 var colleMapDelete = (srcId) =>{
-  return getFtDb
+  return getDb
     .then(db => {
       var colle = db.collection(colleIcm);
       return colle.deleteOne({srcId});
