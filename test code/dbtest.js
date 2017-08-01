@@ -1,4 +1,4 @@
-const dbop = require("./dbop");
+const dbop = require("../dbop");
 
 var srcId = "Ubd390b9ab997142a8449926989667617";
 
