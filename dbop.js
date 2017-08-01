@@ -1,4 +1,5 @@
-var MongoClient = require('mongodb').MongoClient;
+const Mongo = require('mongodb'); //for ObjectId()
+const MongoClient = require('mongodb').MongoClient;
 
 const dbUrl = "mongodb://mongodb.harkuli.nctu.me:27017/linebot";
 const dbUrl_familytree = "mongodb://mongodb.harkuli.nctu.me:27017/familytree";
@@ -7,6 +8,10 @@ const getDb = MongoClient.connect(dbUrl);
 const getFtDb = MongoClient.connect(dbUrl_familytree);
 const colleIcm = "idColleMap";
 const defaultColle = "mashu";
+
+////////////////////
+//public functions
+////////////////////
 
 /**
  * return collection name correspond to source id
@@ -97,11 +102,12 @@ var resMapUpsert = (pattern, response, colleName, talker, talkerId) => {
 
 /**
  * return a random response of the matched response list correspond to the message
- * return object: {res, talker}
+ * return object: {res, talker} or null
  */
 var getResByMsg = (msg, colleName) => {
   var colleName = colleName || defaultColle;
   var colle;
+  var resObj;
 
   return getDb
     .then(db => {
@@ -117,16 +123,48 @@ var getResByMsg = (msg, colleName) => {
 
         stream.on("data", (data)=>{
           if(isMatch(data.pattern, msg)){
-            let newObj = {res: data.response, talker: data.talker};
+            let newObj = {res: data.response, talkerId: data.talkerId};
             rst.push(newObj);
           }
         })
       });
     })
     .then(resList => {
-      if(!resList.length) return null;
+      if(!resList.length){
+        resObj = null;
+        return false;
+      }
       var idx = Math.floor(Math.random()*resList.length);
-      return resList[idx];
+      resObj = resList[idx];
+      if(!resObj.talkerId)  return false;
+      return getNameById(resObj.talkerId);
+    })
+    .then(talker => {
+      if(talker){
+        delete resObj.talkerId;
+        resObj.talker = talker;
+      }
+      return resObj;
+    });
+};
+
+////////////////////
+//private functions
+////////////////////
+
+/**
+ * get talker name by talker id
+ * @param {String} talkerId talker id
+ * @return {Promise} resolved value is talker name
+ */
+var getNameById = (talkerId) => {
+  return getFtDb
+    .then(db => {
+      var colle = db.collection("person");
+      return colle.findOne({_id: Mongo.ObjectId(talkerId)});
+    })
+    .then(item => {
+      return item.name;
     });
 };
 
