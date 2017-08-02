@@ -112,7 +112,7 @@ var getResByMsg = (msg, colleName) => {
     .then(db => {
       var stream;
       colle = db.collection(colleName);
-      stream = colle.find().stream();
+      stream = colle.find({enable: true}).stream();
       return new Promise((resolve) => {
         var rst = [];
 
