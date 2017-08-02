@@ -111,8 +111,9 @@ var getResByMsg = (msg, colleName) => {
   return dbConnect.getDb_lb
     .then(db => {
       var stream;
+      var filter = colleName === defaultColle ? {} : {enable: true};
       colle = db.collection(colleName);
-      stream = colle.find({enable: true}).stream();
+      stream = colle.find(filter).stream();
       return new Promise((resolve) => {
         var rst = [];
 
