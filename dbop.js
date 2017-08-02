@@ -1,8 +1,11 @@
 const Mongo = require('mongodb'); //for ObjectId()
 const dbConnect = require("./db");
+const match = require("./match");
 
 const colleIcm = "idColleMap";
 const defaultColle = "mashu";
+
+const MIN_PAT_SIM = 0.7; //minimum pattern similarity
 
 ////////////////////
 //public functions
@@ -103,6 +106,7 @@ var getResByMsg = (msg, colleName) => {
   var colleName = colleName || defaultColle;
   var colle;
   var resObj;
+  var max_weight = 0;
 
   return dbConnect.getDb_lb
     .then(db => {
@@ -117,11 +121,19 @@ var getResByMsg = (msg, colleName) => {
         });
 
         stream.on("data", (data)=>{
-          if(isMatch(data.pattern, msg)){
-            let newObj = {res: data.response, talkerId: data.talkerId};
+          var sim_rst = match.pattern_similarity(data.pattern, msg);
+          //record response while the similarity weight isn't small then current max weight
+          //where weight is the matched split part number between the pattern and message
+          if(sim_rst.sim >= MIN_PAT_SIM && sim_rst.weight >= max_weight){
+            let newObj = {
+              res: data.response,
+              talkerId: data.talkerId,
+              weight: sim_rst.weight
+            };
             rst.push(newObj);
+            max_weight = sim_rst.weight;
           }
-        })
+        });
       });
     })
     .then(resList => {
@@ -129,6 +141,7 @@ var getResByMsg = (msg, colleName) => {
         resObj = null;
         return false;
       }
+      resList = pickResByWeight(resList);
       var idx = Math.floor(Math.random()*resList.length);
       resObj = resList[idx];
       if(!resObj.talkerId)  return false;
@@ -163,9 +176,19 @@ var getNameById = (talkerId) => {
     });
 };
 
-/** private functions */
-var isMatch = (pattern, msg) => {
-  return pattern === msg;
+/**
+ * return an array of response objects with designated weight
+ * @param {*} resArr response array
+ * @param {*} weight designated weight
+ * @return {Array<Object>} an array of response objects
+ */
+var pickResByWeight = (resArr, weight) => {
+  var rst = [];
+  for(let res of resArr){
+    if(res.weight === weight)
+      rst.push(res);
+  }
+  return rst;
 };
 
 module.exports = {getColleById, colleMapUpsert, colleMapDelete, resMapUpsert, getResByMsg};
