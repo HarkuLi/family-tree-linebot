@@ -124,6 +124,7 @@ var getResByMsg = (msg, colleName) => {
           var sim_rst = match.pattern_similarity(data.pattern, msg);
           //record response while the similarity weight isn't small then current max weight
           //where weight is the matched split part number between the pattern and message
+          console.log("sim rst: "+JSON.stringify(sim_rst));
           if(sim_rst.sim >= MIN_PAT_SIM && sim_rst.weight >= max_weight){
             let newObj = {
               res: data.response,
@@ -133,15 +134,17 @@ var getResByMsg = (msg, colleName) => {
             rst.push(newObj);
             max_weight = sim_rst.weight;
           }
+          console.log("max_weight: "+max_weight);
         });
       });
     })
     .then(resList => {
       if(!resList.length){
         resObj = null;
+        console.log("response list is null");
         return false;
       }
-      resList = pickResByWeight(resList);
+      resList = pickResByWeight(resList, max_weight);
       var idx = Math.floor(Math.random()*resList.length);
       resObj = resList[idx];
       if(!resObj.talkerId)  return false;
@@ -185,8 +188,10 @@ var getNameById = (talkerId) => {
 var pickResByWeight = (resArr, weight) => {
   var rst = [];
   for(let res of resArr){
-    if(res.weight === weight)
+    if(res.weight === weight){
+      console.log("pick a response: "+JSON.stringify(res));
       rst.push(res);
+    }
   }
   return rst;
 };
