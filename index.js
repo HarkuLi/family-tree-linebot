@@ -37,10 +37,6 @@ var handleEvent = (event)=>{
       if(rst) return true;
       return talkHandle(event, sourceId, event.message.text, colleName);
     });
-  
-  // const echo = {type: "text", text: event.message.text};
-
-  // return client.replyMessage(event.replyToken, echo);
 };
 
 const port = process.env.PORT || 3000;
@@ -74,6 +70,7 @@ var cmdHandle = (event, srcId, msg) => {
  * return a promise, and the result would be true if the bot responds
  */
 var talkHandle = (event, srcId, msg, colleName) => {
+  console.log("incoming message: " + msg);
   dbop.getResByMsg(msg, colleName)
     .then(resObj => {
       if(!resObj) return false;

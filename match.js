@@ -2,9 +2,9 @@ const nodejieba = require("nodejieba");
 
 const MIN_WORD_SIM = 0.9; //minimum word similarity
 
-nodejieba.load({
-  userDict: "./dict/dict.txt"
-});
+// nodejieba.load({
+//   userDict: "./dict/dict.txt"
+// });
 
 /**
  * suppose that pattern length: N, sentence length: M
