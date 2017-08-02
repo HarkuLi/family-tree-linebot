@@ -1,11 +1,6 @@
 const Mongo = require('mongodb'); //for ObjectId()
-const MongoClient = require('mongodb').MongoClient;
+const dbConnect = require("./db");
 
-const dbUrl = "mongodb://mongodb.harkuli.nctu.me:27017/linebot";
-const dbUrl_familytree = "mongodb://mongodb.harkuli.nctu.me:27017/familytree";
-
-const getDb = MongoClient.connect(dbUrl);
-const getFtDb = MongoClient.connect(dbUrl_familytree);
 const colleIcm = "idColleMap";
 const defaultColle = "mashu";
 
@@ -19,7 +14,7 @@ const defaultColle = "mashu";
  */
 var getColleById = (srcId)=>{
   var colleName = defaultColle;
-  return getDb
+  return dbConnect.getDb_lb
     .then(db => {
       var colle = db.collection(colleIcm);
       return colle.findOne({srcId});
@@ -33,14 +28,14 @@ var getColleById = (srcId)=>{
 var colleMapUpsert = (srcId, usr) =>{
   var colle;
 
-  return getFtDb
+  return dbConnect.getDb_ft
     .then(db => {
       colle = db.collection("user");
       return colle.count({usr});
     })
     .then(count => {
       if(!count) return false;
-      return getDb;
+      return dbConnect.getDb_lb;
     })
     .then(db => {
       if(!db) return false;
@@ -59,7 +54,7 @@ var colleMapUpsert = (srcId, usr) =>{
 }
 
 var colleMapDelete = (srcId) =>{
-  return getDb
+  return dbConnect.getDb_lb
     .then(db => {
       var colle = db.collection(colleIcm);
       return colle.deleteOne({srcId});
@@ -76,7 +71,7 @@ var colleMapDelete = (srcId) =>{
 var resMapUpsert = (pattern, response, colleName, talker, talkerId) => {
   var colleName = colleName || defaultColle;
   var colle;
-  return getDb
+  return dbConnect.getDb_lb
     .then(db => {
       var reqObj = {pattern};
       if(talker && talkerId)  reqObj.talkerId = talkerId;
@@ -109,7 +104,7 @@ var getResByMsg = (msg, colleName) => {
   var colle;
   var resObj;
 
-  return getDb
+  return dbConnect.getDb_lb
     .then(db => {
       var stream;
       colle = db.collection(colleName);
@@ -158,7 +153,7 @@ var getResByMsg = (msg, colleName) => {
  * @return {Promise} resolved value is talker name
  */
 var getNameById = (talkerId) => {
-  return getFtDb
+  return dbConnect.getDb_ft
     .then(db => {
       var colle = db.collection("person");
       return colle.findOne({_id: Mongo.ObjectId(talkerId)});
