@@ -5,6 +5,9 @@ const pwd_ft = process.env.PWD_FT;
 const user_lb = process.env.USER_LB;
 const pwd_lb = process.env.PWD_LB;
 
+console.log(pwd_ft);
+console.log(pwd_lb);
+
 const dbUrl_lb = "mongodb://" + user_lb + ":" + pwd_lb + "@mongodb.harkuli.nctu.me:27017/linebot";
 const dbUrl_ft = "mongodb://" + user_ft + ":" + pwd_ft + "@mongodb.harkuli.nctu.me:27017/familytree";
 
