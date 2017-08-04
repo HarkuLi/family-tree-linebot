@@ -37,7 +37,7 @@ command: 瑪修我教妳:[pattern]=>[response]
 
 ex: 瑪修我教妳: weather => sunny day
 
-## Similarity pattern also works
+## Similar pattern also works
 
 <img src="https://github.com/HarkuLi/family-tree-linebot/blob/master/img/similarity_demo.jpg?raw=true">
 
