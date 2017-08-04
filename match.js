@@ -1,6 +1,6 @@
 const nodejieba = require("nodejieba");
 
-const MIN_WORD_SIM = 0.9; //minimum word similarity
+const MIN_WORD_SIM = process.env.MIN_WORD_SIM || 0.78; //minimum word similarity
 
 // nodejieba.load({
 //   userDict: "./dict/dict.txt"

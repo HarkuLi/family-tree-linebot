@@ -5,7 +5,7 @@ const match = require("./match");
 const colleIcm = "idColleMap";
 const defaultColle = "mashu";
 
-const MIN_PAT_SIM = 0.7; //minimum pattern similarity
+const MIN_PAT_SIM = process.env.MIN_PAT_SIM || 0.7; //minimum pattern similarity
 
 ////////////////////
 //public functions
