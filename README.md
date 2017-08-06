@@ -17,7 +17,7 @@ QR code:
 
 ## Commands of the bot
 
-### Look the commands list
+### See the commands list
   
 command: 瑪修,再講一次指令
   
@@ -63,13 +63,30 @@ ex: 瑪修我教妳: weather => sunny day
 
 ### Not required
 
-* MIN_WORD_SIM: for comparing similarity
+* MIN_WORD_SIM: parameter for comparing similarity
 
-* MIN_PAT_SIM: for comparing similarity
+* MIN_PAT_SIM: parameter for comparing similarity
 
 ## Get started
 
-Note: you should run mongodb in [family_tree](https://github.com/HarkuLi/family_tree) project first
+Note: you should run mongodb in [family_tree](https://github.com/HarkuLi/family_tree) project first, either locally or remotely
+
+build docker image by Dockerfile
 
 	npm run build-dev
-	npm run start-dev-docker
+
+### Running db locally
+
+	npm run start-docker-localdb
+	
+now, your server run on localhost:3000
+
+### Running db remotely
+	
+first, write the url and authentication info. in the .env file
+
+and run:
+
+	npm run start-docker-remotedb
+	
+now, your server run on localhost:3000
