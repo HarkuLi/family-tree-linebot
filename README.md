@@ -43,13 +43,17 @@ ex: 瑪修我教妳: weather => sunny day
 
 ## Environment variables
 
+* used in code by process.env.[VARIABLE_NAME]
+
+* if running locally, you can set environment variables in the .env file
+
 ### Required
 
 * CHANNEL_ACCESS_TOKEN: for line API
 
 * CHANNEL_SECRET: for line API
 
-### Not required if running locally
+### Not required if running db locally
 
 * DB_URL: URL of remote db ex: mongodb://mydb.xxx.xxx:27017/
 
