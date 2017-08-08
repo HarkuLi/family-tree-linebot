@@ -2,8 +2,8 @@
 
 const line = require("@line/bot-sdk");
 const express = require("express");
-const dbop = require("./dbop");
-const dft = require("./config/default");
+const dbop = require("../lib/dbop");
+const dft = require("../config/default");
 
 const config = {
   channelAccessToken: process.env.CHANNEL_ACCESS_TOKEN,

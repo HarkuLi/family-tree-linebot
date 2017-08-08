@@ -3,7 +3,7 @@ const nodejieba = require("nodejieba");
 const MIN_WORD_SIM = process.env.MIN_WORD_SIM || 0.78; //minimum word similarity
 
 // nodejieba.load({
-//   userDict: "./dict/dict.txt"
+//   userDict: "../../dict/dict.txt"
 // });
 
 /**
