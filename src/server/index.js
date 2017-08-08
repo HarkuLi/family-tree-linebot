@@ -140,8 +140,8 @@ var teach = (event, msg) => {
   pattern = rmRedundantSpace(msg.slice(idx_ps, idx_pe));
   response = rmRedundantSpace(msg.slice(idx_pe+2));
   if(!pattern.length || !response.length) return rstFalse;
-  else if(pattern.length >= dft.MAX_INPUT_LEN || response >= dft.MAX_INPUT_LEN){
-    const resMsg = {type: "text", text: "等...等等...前輩, 一次講太多了啦σ(oдolll)"}
+  if(pattern.length >= dft.MAX_INPUT_LEN || response.length >= dft.MAX_INPUT_LEN){
+    let resMsg = {type: "text", text: "等...等等...前輩, 一次講太多了啦σ(oдolll)"}
     client.replyMessage(event.replyToken, resMsg);
     return rstTrue;
   }
