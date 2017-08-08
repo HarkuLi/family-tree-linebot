@@ -3,6 +3,7 @@
 const line = require("@line/bot-sdk");
 const express = require("express");
 const dbop = require("./dbop");
+const dft = require("./config/default");
 
 const config = {
   channelAccessToken: process.env.CHANNEL_ACCESS_TOKEN,
@@ -123,6 +124,7 @@ var help = (event, msg) => {
 var teach = (event, msg) => {
   var idx_ps, idx_pe; //ps: pattern start, pe: pattern end
   var pattern, response;
+  var rstTrue = Promise.resolve(true);
   var rstFalse = Promise.resolve(false);
 
   msg = rmRedundantSpace(msg);
@@ -134,10 +136,16 @@ var teach = (event, msg) => {
   if(idx_ps < 0 || idx_ps === msg.length-2) return rstFalse;
   ++idx_ps;
   idx_pe = msg.indexOf("=>", idx_ps+1);
-  if(idx_pe < 0 || idx_pe === msg.length-3) return rstFalse;
+  if(idx_pe < 0 || idx_pe === msg.length-2) return rstFalse;
   pattern = rmRedundantSpace(msg.slice(idx_ps, idx_pe));
   response = rmRedundantSpace(msg.slice(idx_pe+2));
   if(!pattern.length || !response.length) return rstFalse;
+  else if(pattern.length >= dft.MAX_INPUT_LEN || response >= dft.MAX_INPUT_LEN){
+    const resMsg = {type: "text", text: "等...等等...前輩, 一次講太多了啦σ(oдolll)"}
+    client.replyMessage(event.replyToken, resMsg);
+    return rstTrue;
+  }
+
   //save in db and reply
   return dbop.resMapUpsert(pattern, response)
     .then(rst => {
