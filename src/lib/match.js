@@ -1,6 +1,5 @@
 const nodejieba = require("nodejieba");
-
-const MIN_WORD_SIM = process.env.MIN_WORD_SIM || 0.78; //minimum word similarity
+const config = require("../config/default");
 
 // nodejieba.load({
 //   userDict: "../../dict/dict.txt"
@@ -13,7 +12,7 @@ const MIN_WORD_SIM = process.env.MIN_WORD_SIM || 0.78; //minimum word similarity
  * @return {Number} similarity
  */
 var pattern_similarity = (pattern, sentence) => {
-  var chRE = /[\u4E00-\u9FA5]/; //unicode
+  var chRE = /[\u4E00-\u9FA5]/; //chinese unicode
   var pat_arr, sent_arr;  //split pattern, split sentence
 
   //case-insensitive
@@ -21,15 +20,11 @@ var pattern_similarity = (pattern, sentence) => {
   sentence = sentence.toLowerCase();
 
   //split sentences
-  if(chRE.test(pattern) || chRE.test(sentence)){
-    //contain chinese
-    pat_arr = nodejieba.cut(pattern);
-    sent_arr = nodejieba.cut(sentence);
-  }
-  else{
-    pat_arr = pattern.split(" ");
-    sent_arr = sentence.split(" ");
-  }
+  pat_arr = chRE.test(pattern) ? nodejieba.cut(pattern) : pattern.split(" ");
+  sent_arr = chRE.test(sentence) ? nodejieba.cut(sentence) : sentence.split(" ");
+
+  console.log("cut pattern: " + JSON.stringify(pat_arr));
+  console.log("cut sentence: " + JSON.stringify(sent_arr));
 
   return split_similarity(pat_arr, sent_arr);
 };
@@ -92,7 +87,7 @@ var split_similarity = (pat_arr, sent_arr) => {
     for(let j=1; j<=sent_arr.length; ++j){
       upper_left_tmp = DPTable[j];
       //small different with LCS, use similarity between words instead of equality
-      if(str_similarity(pat_arr[i-1],sent_arr[j-1]) >= MIN_WORD_SIM)
+      if(str_similarity(pat_arr[i-1],sent_arr[j-1]) >= config.MIN_WORD_SIM)
         DPTable[j] = upper_left + 1;
       else
         DPTable[j] = max(DPTable[j-1], DPTable[j]);
