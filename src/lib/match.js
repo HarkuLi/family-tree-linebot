@@ -5,6 +5,9 @@ const dft = require("../config/default");
 //   userDict: "../../dict/dict.txt"
 // });
 
+var last_pat = "";
+var last_pat_cut = [];
+
 /**
  * suppose that pattern length: N, sentence length: M
  * @param {String} pattern
@@ -15,12 +18,18 @@ var pattern_similarity = (pattern, sentence) => {
   var chRE = /[\u4E00-\u9FA5]/; //chinese unicode
   var pat_arr, sent_arr;  //split pattern, split sentence
 
-  //case-insensitive
-  pattern = pattern.toLowerCase();
-  sentence = sentence.toLowerCase();
+  //split pattern
+  //avoid repeated splitting same pattern
+  if(pattern === last_pat)  pat_arr = last_pat_cut;
+  else{
+    pattern = pattern.toLowerCase();
+    pat_arr = chRE.test(pattern) ? nodejieba.cut(pattern) : pattern.split(" ");
+    last_pat = pattern;
+    last_pat_cut = pat_arr;
+  }
 
-  //split sentences
-  pat_arr = chRE.test(pattern) ? nodejieba.cut(pattern) : pattern.split(" ");
+  //split sentence 
+  sentence = sentence.toLowerCase();
   sent_arr = chRE.test(sentence) ? nodejieba.cut(sentence) : sentence.split(" ");
 
   return split_similarity(pat_arr, sent_arr);
