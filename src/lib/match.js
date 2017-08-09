@@ -23,9 +23,6 @@ var pattern_similarity = (pattern, sentence) => {
   pat_arr = chRE.test(pattern) ? nodejieba.cut(pattern) : pattern.split(" ");
   sent_arr = chRE.test(sentence) ? nodejieba.cut(sentence) : sentence.split(" ");
 
-  console.log("cut pattern: " + JSON.stringify(pat_arr));
-  console.log("cut sentence: " + JSON.stringify(sent_arr));
-
   return split_similarity(pat_arr, sent_arr);
 };
 
@@ -78,6 +75,7 @@ var split_similarity = (pat_arr, sent_arr) => {
   var upper_left = 0;
   var max_len = max(pat_arr.length, sent_arr.length);
   var LCS_len;
+  var sim;
   //the index of dynamic programming table start from 1 for programming easily
   //note that indices of pat_arr and sent_arr still start from 0
   for(let i=0; i<=max_len; ++i) DPTable[i] = 0;  //complexity: Θ(max(N, M))
@@ -96,7 +94,13 @@ var split_similarity = (pat_arr, sent_arr) => {
   }
   LCS_len = DPTable[sent_arr.length];
 
-  return {sim: LCS_len/pat_arr.length, weight: LCS_len};
+  sim = LCS_len/pat_arr.length;
+  if(sim >= dft.MIN_PAT_SIM){
+    console.log("cut pattern: " + JSON.stringify(pat_arr));
+    console.log("cut sentence: " + JSON.stringify(sent_arr));
+  }
+
+  return {sim, weight: LCS_len};
 }
 
 var max = (num1, num2) => {
