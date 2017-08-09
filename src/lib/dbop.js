@@ -1,7 +1,7 @@
 const Mongo = require('mongodb'); //for ObjectId()
 const dbConnect = require("./db");
 const match = require("./match");
-const config = require("../config/default");
+const dft = require("../config/default");
 
 const colleIcm = "idColleMap";
 const defaultColle = "mashu";
@@ -124,7 +124,7 @@ var getResByMsg = (msg, colleName) => {
           var sim_rst = match.pattern_similarity(data.pattern, msg);
           //record response while the similarity weight isn't small then current max weight
           //where weight is the matched split part number between the pattern and message
-          if(sim_rst.sim >= config.MIN_PAT_SIM && sim_rst.weight >= max_weight){
+          if(sim_rst.sim >= dft.MIN_PAT_SIM && sim_rst.weight >= max_weight){
             let newObj = {
               res: data.response,
               talkerId: data.talkerId,

@@ -1,5 +1,5 @@
 const nodejieba = require("nodejieba");
-const config = require("../config/default");
+const dft = require("../config/default");
 
 // nodejieba.load({
 //   userDict: "../../dict/dict.txt"
@@ -87,7 +87,7 @@ var split_similarity = (pat_arr, sent_arr) => {
     for(let j=1; j<=sent_arr.length; ++j){
       upper_left_tmp = DPTable[j];
       //small different with LCS, use similarity between words instead of equality
-      if(str_similarity(pat_arr[i-1],sent_arr[j-1]) >= config.MIN_WORD_SIM)
+      if(str_similarity(pat_arr[i-1],sent_arr[j-1]) >= dft.MIN_WORD_SIM)
         DPTable[j] = upper_left + 1;
       else
         DPTable[j] = max(DPTable[j-1], DPTable[j]);
